@@ -24,7 +24,7 @@ class UsersImport extends Command
     /**
      * Execute the console command.
      */
-    public function handle(UserService $userImportService): string
+    public function handle(UserService $userImportService): int
     {
         $file = $this->argument('file');
 

@@ -26,7 +26,7 @@ class UsersNotify extends Command
     /**
      * Execute the console command.
      */
-    public function handle(UserService $userService)
+    public function handle(UserService $userService): void
     {
         $userService->getAdmins()->each(function ($user) {
             Mail::to($user->email)->queue(new SendUserMail($user));
