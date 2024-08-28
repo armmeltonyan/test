@@ -4,12 +4,11 @@ namespace App\Http\Controllers\v0\API\Image;
 
 use App\Http\Controllers\v0\API\ApiController;
 use App\Http\Requests\Image\ImageStoreRequets;
-use App\Http\Resources\Image\ImageResource;
+use App\Jobs\ImageUpload;
 use App\Services\Image\ImageSqueezeService;
 use App\Services\Image\ImageStoreService;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 class ImageController extends ApiController
 {
@@ -19,16 +18,12 @@ class ImageController extends ApiController
     ) {}
 
     /**
-     * @throws UnknownProperties
      * @throws Exception
      */
     public function store(ImageStoreRequets $request): JsonResponse
     {
-        $imageDto = $this->imageSqueezeService->squeeze($request->file('image')->getRealPath());
-        $image = $this->imageStoreService->store($imageDto);
+        ImageUpload::dispatch($request->file('image'));
 
-        return $image === null
-            ? self::sendError(__('errors.image.upload'), 500)
-            : self::sendResponse(new ImageResource($image), __('messages.image.upload'),201);
+        return self::sendResponse(null, __('messages.image.upload_queued'), 202);
     }
 }
